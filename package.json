@@ -1,0 +1,26 @@
+{
+  "name": "localtime",
+  "version": "1.0.0",
+  "description": "",
+  "main": "localtime.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "mocha": "^6.2.0"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/roiemir/localtime.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/roiemir/localtime/issues"
+  },
+  "homepage": "https://github.com/roiemir/localtime#readme"
+}
