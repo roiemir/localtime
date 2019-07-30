@@ -5,7 +5,20 @@
     }
 
     function LocalTime(year, month, day, hour, minute, second, ms, zone) {
-        if (typeof year === "string") {
+        if (year instanceof LocalTime) {
+            this.time = year.time;
+            this.year = year.year;
+            this.month = year.month;
+            this.day = year.day;
+            this.hour = year.hour;
+            this.minute = year.minute;
+            this.second = year.second;
+            this.ms = year.ms;
+            this.offset = year.offset;
+            this.tz = year.tz;
+            this.zone = year.zone;
+        }
+        else if (typeof year === "string") {
             // Parse time in timezone
             // Expected format YYYY-MM-DD[ HH[:MM[:SS[.MSEC]][ TZ][ OFFSET]
             var parts = year.split(" ");
@@ -229,6 +242,64 @@
 
     LocalTime.prototype.getTime = function () {
         return this.time;
+    };
+
+    LocalTime.prototype.valueOf = function () {
+        return this.time;
+    };
+
+    LocalTime.prototype.getMinutes = function () { return this.minute; };
+    LocalTime.prototype.getHours = function () { return this.hour; };
+    LocalTime.prototype.setMinutes = function (minute, second, ms) {
+        if (ms) {
+            var r = ms % 1000;
+            second += (ms - r) / 1000;
+            if (r < 0) {
+                this.ms = 1000 + r;
+                second--;
+            }
+            else {
+                this.ms = r;
+            }
+        }
+        var offset = 0;
+        if (minute != null) {
+            offset += (minute - this.minute)*60;
+        }
+        if (second != null) {
+            offset += (second - this.second);
+        }
+        if (offset) {
+            modifyTime(this, offset);
+            evaluateUtc(this);
+        }
+    };
+    LocalTime.prototype.setHours = function (hour, minute, second, ms) {
+        if (ms) {
+            var r = ms % 1000;
+            second += (ms - r) / 1000;
+            if (r < 0) {
+                this.ms = 1000 + r;
+                second--;
+            }
+            else {
+                this.ms = r;
+            }
+        }
+        var offset = 0;
+        if (hour != null) {
+            offset += (hour - this.hour)*3600;
+        }
+        if (minute != null) {
+            offset += (minute - this.minute)*60;
+        }
+        if (second != null) {
+            offset += (second - this.second);
+        }
+        if (offset) {
+            modifyTime(this, offset);
+            evaluateUtc(this);
+        }
     };
 
     LocalTime.prototype.toString = function () {
@@ -533,6 +604,10 @@
             return;
         }
         time.offset = (time.offset || 0) + offset;
+        modifyTime(time, offset);
+    }
+
+    function modifyTime(time, offset) {
         var s = offset % 60;
         offset = (offset - s) / 60;
         time.second += s;
@@ -1151,11 +1226,14 @@
         })(require('fs'), require('path'));
     }
 
-    LocalTime.load(["tzdata/northamerica", "tzdata/asia"], function () {
+    /*LocalTime.load(["tzdata/northamerica", "tzdata/asia"], function () {
+        var time = new LocalTime(new Date("2019-03-10T08:00Z"), "America/Denver");
+        var time2 = new LocalTime(time);
+        time2.setHours(0);
 //        console.log(new LocalTime(new Date("1963-12-31T16:30Z"), "Asia/Jakarta").toString());
         //console.log(new LocalTime("2015-03-08 01:00 CDT -04:00", "America/Havana").toString());
         //console.log(new Date(new LocalTime("1991-03-31 02:00 +05/+06 +06:00", "Asia/Dushanbe")).toISOString());
-    });
+    });*/
 
     //console.log(new LocalTime(2019, 7, 28, 13, 8, 0, 1).toString());
 })();
