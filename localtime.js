@@ -973,6 +973,7 @@
             var rulesets = {};
             if (err) {
                 callback(err);
+                return;
             }
             var lines = result.split('\n');
             var n = 0;
@@ -1013,6 +1014,103 @@
 
             callback();
         });
+    };
+
+    LocalTime.import = function (zoneData) {
+        for (var key in zoneData.rulesets) {
+            TimezoneData.rulesets[key] = zoneData.rulesets[key];
+        }
+
+        for (var key in zoneData.zones) {
+            TimezoneData.zones[key] = zoneData.zones[key];
+        }
+    };
+
+    LocalTime.export = function (zones) {
+        function copyDay(day) {
+            if (day == null) {
+                return null;
+            }
+
+            if (typeof day === "number") {
+                return day;
+            } else {
+                return {
+                    last: day.last,
+                    day: day.day,
+                    from: day.from,
+                    to: day.to
+                };
+            }
+        }
+
+        function copyTime(time) {
+            if (time == null) {
+                return null;
+            }
+            if (typeof time === "number") {
+                return time;
+            }
+            else {
+                return {
+                    utc: time.utc,
+                    std: time.std
+                };
+            }
+        }
+
+        if (typeof zones === "string") {
+            zones = [zones];
+        }
+        var result = {rulesets:{}, zones: {}};
+        for (var i = 0; i < zones.length; i++) {
+            var zone = zones[i].toLowerCase();
+            var data = TimezoneData.zones[zone];
+            var resultZone = {
+                name: data.name,
+                lines: []
+            };
+            result.zones[zone] = resultZone;
+
+            for (var l = 0; l < data.lines.length; l++) {
+                var line = data.lines[l];
+                var until = null;
+                if (line.until) {
+                    until = {
+                        year: line.until.year,
+                        month: line.until.month,
+                        day: copyDay(line.until.day),
+                        time: copyTime(line.until.time)
+                    };
+
+                }
+                if (line.rule && !result.rulesets[line.rule]) {
+                    var ruleset = TimezoneData.rulesets[line.rule];
+                    var resultRuleset = [];
+                    for (var r = 0; r < ruleset.length; r++) {
+                        var rule = ruleset[r];
+                        resultRuleset.push({
+                            from: rule.from,
+                            to: rule.to,
+                            month: rule.month,
+                            on: copyDay(rule.on),
+                            at: copyTime(rule.at),
+                            save: copyTime(rule.save),
+                            letters: rule.letters
+                        });
+                    }
+                    result.rulesets[line.rule] = resultRuleset;
+                }
+                resultZone.lines.push({
+                    stdoff: line.stdoff,
+                    rule: line.rule,
+                    format: line.format,
+                    until: until
+                });
+            }
+        }
+
+        return result;
     };
 
     var load;
