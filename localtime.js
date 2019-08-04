@@ -250,6 +250,7 @@
 
     LocalTime.prototype.getMinutes = function () { return this.minute; };
     LocalTime.prototype.getHours = function () { return this.hour; };
+    LocalTime.prototype.getDay = function () { return this.day; };
     LocalTime.prototype.setMinutes = function (minute, second, ms) {
         if (ms) {
             var r = ms % 1000;
@@ -298,6 +299,13 @@
         }
         if (offset) {
             modifyTime(this, offset);
+            evaluateUtc(this);
+        }
+    };
+
+    LocalTime.prototype.setDay = function (day) {
+        if (day) {
+            modifyTime(this, day*24*60*60000);
             evaluateUtc(this);
         }
     };
