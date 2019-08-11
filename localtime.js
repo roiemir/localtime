@@ -305,7 +305,7 @@
 
     LocalTime.prototype.setDay = function (day) {
         if (day) {
-            modifyTime(this, day*24*60*60000);
+            modifyTime(this, (day-this.day)*24*60*60);
             evaluateUtc(this);
         }
     };
@@ -452,9 +452,7 @@
                 }
             }
 
-            if (!time.tz) {
-                time.tz = line.format.split("%s").join(rule && rule.letters ? rule.letters : "S");
-            }
+            time.tz = line.format.split("%s").join(rule && rule.letters ? rule.letters : "S");
 
             var offset = time.offset = line.stdoff + (rule ? rule.save : 0);
             offsetTime(time, -offset);
