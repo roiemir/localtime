@@ -17,6 +17,10 @@
             this.offset = year.offset;
             this.tz = year.tz;
             this.zone = year.zone;
+
+            if (typeof month === "string" && this.zone !== month) {
+                this.setTimezone(month);
+            }
         }
         else if (typeof year === "string") {
             // Parse time in timezone
@@ -251,6 +255,7 @@
     LocalTime.prototype.getMinutes = function () { return this.minute; };
     LocalTime.prototype.getHours = function () { return this.hour; };
     LocalTime.prototype.getDay = function () { return this.day; };
+    LocalTime.prototype.getDayOfWeek = function () { return new Date(this.year, this.month - 1, this.day).getDay(); };
     LocalTime.prototype.setMinutes = function (minute, second, ms) {
         if (ms) {
             var r = ms % 1000;
