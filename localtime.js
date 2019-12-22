@@ -157,10 +157,10 @@
         this.ms = date.getUTCMilliseconds();
         this.offset = 0;
 
-        var data = TimezoneData.zones[zone.toLowerCase()];
+        var data = getTimezoneData(zone);
         if (data) {
             this.zone = zone;
-            var n = 0;
+            /*var n = 0;
             var line = data.lines[0];
             offsetTime(this, line.stdoff);
             var rule = evaluateRule(this, line.rule);
@@ -235,6 +235,19 @@
                 if (rule && rule.save) {
                     offsetTime(this, rule.save);
                 }
+            }*/
+
+            var n = 0;
+            var line = data.lines[0];
+            while (line.until && line.until.utc <= this.time) {
+                n++;
+                line = data.lines[n];
+            }
+
+            offsetTime(this, line.stdoff);
+            var rule = evaluateRule(this, line.rule);
+            if (rule && rule.save) {
+                offsetTime(this, rule.save);
             }
 
             this.tz = line.format.split("%s").join(rule && rule.letters ? rule.letters : "S");
@@ -350,6 +363,15 @@
         return null;
     }
 
+    function matchLetters(format, tz) {
+        var n = format.indexOf('%');
+        if (n >= 0) {
+            return format.slice(0, n) === tz.slice(0, n) &&
+                format.slice(n + 2) === tz.slice(tz.length - (format.length - n - 2));
+        }
+        return format === tz;
+    }
+
     function formatUtcTimezone(offset) {
         var absOffset = Math.abs(offset);
         if (absOffset % 3600 === 0) {
@@ -368,6 +390,30 @@
         }
     }
 
+    function compareTimes(a, b) {
+        var d = a.year - b.year;
+        if (d !== 0) {
+            return d;
+        }
+        d = a.month - b.month;
+        if (d !== 0) {
+            return d;
+        }
+        d = a.day - b.day;
+        if (d !== 0) {
+            return d;
+        }
+        d = a.hour - b.hour;
+        if (d !== 0) {
+            return d;
+        }
+        d = a.minute - b.minute;
+        if (d !== 0) {
+            return d;
+        }
+        return a.second - b.second;
+    }
+
     function evaluateUtc(time) {
         if (!time.zone) {
             var date = new Date(time.year, time.month - 1, time.day, time.hour, time.minute, time.second, time.ms);
@@ -376,9 +422,9 @@
             time.tz = formatUtcTimezone(time.offset);
             return true;
         }
-        var data = TimezoneData.zones[time.zone.toLowerCase()];
+        var data = getTimezoneData(time.zone);
         if (data) {
-            var n = 0;
+            /*var n = 0;
             var line = data.lines[0];
             // TODO - will not work with u time
             var ruleSave = findRuleSave(time.year, line.rule, time.tz ? extractLetters(line.format, time.tz) : null);
@@ -455,6 +501,43 @@
                 if (ruleSave) {
                     offsetTime(time, ruleSave);
                 }
+            }*/
+
+            var n = 0;
+            var line = data.lines[0];
+            while (line.change &&
+                compareTimes(line.change, time) < 0) {
+                n++;
+                line = data.lines[n];
+            }
+            if (line.change && n < data.lines.length) {
+                var next = data.lines[n + 1];
+                if (next.offdiff) {
+                    var change = {
+                        year: line.change.year,
+                        month: line.change.month,
+                        day: line.change.day,
+                        hour: line.change.hour,
+                        minute: line.change.minute,
+                        second: line.change.second
+                    };
+                    offsetTime(change, next.offdiff);
+                    if (compareTimes(change, time) <= 0) {
+                        // Both this line and next line match time - should check clock name
+                        if (matchLetters(next.format, time.tz)) {
+                            line = next;
+                        }
+                    }
+                }
+            }
+
+            var ruleSave = findRuleSave(time.year, line.rule, time.tz ? extractLetters(line.format, time.tz) : null);
+            if (ruleSave) {
+                offsetTime(time, -ruleSave);
+            }
+            var rule = evaluateRule(time, line.rule);
+            if (ruleSave) {
+                offsetTime(time, ruleSave);
             }
 
             time.tz = line.format.split("%s").join(rule && rule.letters ? rule.letters : "S");
@@ -473,6 +556,85 @@
         zones: {},
         rulesets: {}
     };
+
+    function getTimezoneData(zone) {
+        var data = TimezoneData.zones[zone.toLowerCase()];
+        if (!data) {
+            return null;
+        }
+        if (!data.evaluated) {
+            var n = 0;
+            var thisoff, lastoff = null;
+            var line = data.lines[0];
+            while (line.until) {
+                var t = getTimeForDay(line.until.year, line.until.month, line.until.day);
+                t.hour = 0;
+                t.minute = 0;
+                t.second = 0;
+                line.change = {
+                    year: t.year,
+                    month: t.month,
+                    day: t.day,
+                    hour: t.hour,
+                    minute: t.minute,
+                    second: t.second
+                };
+                var time = line.until.time;
+                if (time == null) {
+                    time = 0;
+                }
+                thisoff = line.stdoff;
+                if (time.utc) {
+                    offsetTime(t, time.utc);
+                    offsetTime(line.change, line.stdoff);
+                    var rule = evaluateRule(line.change, line.rule);
+                    if (rule && rule.save) {
+                        thisoff += rule.save;
+                    }
+                    offsetTime(line.change, time.utc);//-line.stdoff+time.utc);
+                }
+                else if (time.std) {
+                    offsetTime(t, -line.stdoff+time.std);
+                    var rule = evaluateRule(t, line.rule);
+                    if (rule && rule.save) {
+                        offsetTime(line.change, rule.save);
+                        thisoff += rule.save;
+                    }
+                }
+                else {
+                    offsetTime(line.change, time - 1);
+                    var rule = evaluateRule(t, line.rule);
+                    offsetTime(t, -line.stdoff);
+                    offsetTime(line.change, 1);
+                    if (rule && rule.save) {
+                        thisoff += rule.save;
+                        offsetTime(line.change, rule.save);
+                        offsetTime(t, -rule.save);
+                    }
+                    offsetTime(t, time);
+                }
+
+                if (lastoff != null && thisoff !== lastoff) {
+                    line.offdiff = thisoff - lastoff;
+                }
+                line.until.utc = Date.UTC(t.year, t.month - 1, t.day, t.hour, t.minute, t.second);
+
+                lastoff = thisoff;
+                n++;
+                line = data.lines[n];
+            }
+            thisoff = line.stdoff;
+            var rule = evaluateRule(t, line.rule);
+            if (rule && rule.save) {
+                thisoff += rule.save;
+            }
+            if (lastoff != null && thisoff !== lastoff) {
+                line.offdiff = thisoff - lastoff;
+            }
+            data.evaluated = true;
+        }
+        return data;
+    }
 
     function findRuleSave(year, rule, letters) {
         if (letters && typeof rule === "string") {
@@ -603,7 +765,7 @@
                 return {year: d.getFullYear(), month: d.getMonth() + 1, day: d.getDate()};
             }
         }
-        return {year: year, month: month, day: 1};
+        return {year: year, month: month || 1, day: 1};
     }
 
     function timeOffset(time) {
@@ -1237,14 +1399,15 @@
         })(require('fs'), require('path'));
     }
 
-    /*LocalTime.load(["tzdata/northamerica", "tzdata/asia"], function () {
-        var time = new LocalTime(new Date("2019-03-10T08:00Z"), "America/Denver");
-        var time2 = new LocalTime(time);
-        time2.setHours(0);
+    LocalTime.load(["tzdata/northamerica", "tzdata/asia"], function () {
+        //var time = new LocalTime(new Date("2019-03-10T08:00Z"), "America/Denver");
+        //var time2 = new LocalTime(time);
+        //time2.setHours(0);
 //        console.log(new LocalTime(new Date("1963-12-31T16:30Z"), "Asia/Jakarta").toString());
         //console.log(new LocalTime("2015-03-08 01:00 CDT -04:00", "America/Havana").toString());
+        console.log(new LocalTime(new Date("2005-03-26T22:00Z"), "Asia/Tbilisi").toString());
         //console.log(new Date(new LocalTime("1991-03-31 02:00 +05/+06 +06:00", "Asia/Dushanbe")).toISOString());
-    });*/
+    });
 
     //console.log(new LocalTime(2019, 7, 28, 13, 8, 0, 1).toString());
 })();
