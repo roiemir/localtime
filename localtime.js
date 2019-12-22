@@ -269,6 +269,15 @@
     LocalTime.prototype.getHours = function () { return this.hour; };
     LocalTime.prototype.getDay = function () { return this.day; };
     LocalTime.prototype.getDayOfWeek = function () { return new Date(this.year, this.month - 1, this.day).getDay(); };
+    var dayInMilliseconds = 60000*60*24;
+    LocalTime.prototype.getWeek = function (firstDay) {
+        var yearStart = new LocalTime(this.year, 1, 1, this.zone);
+        var ordinalDay = Math.floor(
+            ((this.time - yearStart) + ((this.offset - yearStart.offset) * 1000)) / dayInMilliseconds);
+        var weekDay = (7 + this.getDayOfWeek() - (firstDay || 0)) % 7;
+        var week = (ordinalDay - weekDay + 10) / 7;
+        return Math.floor(week);
+    };
     LocalTime.prototype.setMinutes = function (minute, second, ms) {
         if (ms) {
             var r = ms % 1000;
@@ -844,6 +853,51 @@
             }
         }
     }
+
+    LocalTime.fromWeek = function (year, week, day, hour, minute, second, ms, zone) {
+        if (typeof day === "string" || day == null) {
+            zone = day;
+            day = 0;
+            hour = 0;
+            minute = 0;
+            second = 0;
+            ms = 0;
+        }
+        else if (typeof hour === "string" || hour == null) {
+            zone = hour;
+            hour = 0;
+            minute = 0;
+            second = 0;
+            ms = 0;
+        }
+        else if (typeof minute === "string" || minute == null) {
+            zone = minute;
+            minute = 0;
+            second = 0;
+            ms = 0;
+        }
+        else if (typeof second === "string" || second == null) {
+            zone = second;
+            second = 0;
+            ms = 0;
+        }
+        else if (typeof ms === "string" || ms == null) {
+            zone = ms;
+            ms = 0;
+        }
+
+        var yearStart = new LocalTime(year, 1, 1, zone);
+        var weekDay = yearStart.getDayOfWeek();
+        var ordinalDay = week * 7 - 7 - (weekDay <= 3 ? weekDay : weekDay - 7) + day;
+        var month = 1;
+        var monthDays = new Date(year, month, 0).getDate();
+        while (monthDays < ordinalDay) {
+            ordinalDay -= monthDays;
+            month++;
+            monthDays = new Date(year, month, 0).getDate();
+        }
+        return new LocalTime(year, month, ordinalDay + 1, hour, minute, second, ms, zone);
+    };
 
     LocalTime.load = function (source, callback) {
         if (!source) {
