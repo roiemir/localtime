@@ -1453,7 +1453,7 @@
         })(require('fs'), require('path'));
     }
 
-    LocalTime.load(["tzdata/northamerica", "tzdata/asia"], function () {
+    /*LocalTime.load(["tzdata/northamerica", "tzdata/asia"], function () {
         //var time = new LocalTime(new Date("2019-03-10T08:00Z"), "America/Denver");
         //var time2 = new LocalTime(time);
         //time2.setHours(0);
@@ -1461,7 +1461,7 @@
         //console.log(new LocalTime("2015-03-08 01:00 CDT -04:00", "America/Havana").toString());
         console.log(new LocalTime(new Date("2005-03-26T22:00Z"), "Asia/Tbilisi").toString());
         //console.log(new Date(new LocalTime("1991-03-31 02:00 +05/+06 +06:00", "Asia/Dushanbe")).toISOString());
-    });
+    });*/
 
     //console.log(new LocalTime(2019, 7, 28, 13, 8, 0, 1).toString());
 })();
