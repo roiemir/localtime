@@ -33,5 +33,25 @@ describe('week', function () {
             assert.equal(time.toString(), "2019-08-11 00:00 MDT -06:00");
         });
 
+        it('getting week from date starting monday', function () {
+            var time = new LocalTime(2015, 1, 13, "America/Denver");
+            assert.equal(time.getWeek(1), 3);
+        });
+
+        it('getting week from date starting sunday', function () {
+            var time = new LocalTime(2015, 1, 13, "America/Denver");
+            assert.equal(time.getWeek(), 2);
+        });
+
+        it('getting date from week starting monday', function () {
+            var time = LocalTime.fromWeek(2015, 3, 2, "America/Denver", 1);
+            assert.equal(time.toString(), "2015-01-13 00:00 MST -07:00");
+        });
+
+        it('getting week from date starting sunday', function () {
+            var time = LocalTime.fromWeek(2015, 2, 2, "America/Denver");
+            assert.equal(time.toString(), "2015-01-13 00:00 MST -07:00");
+        });
+
     });
 });

@@ -854,9 +854,10 @@
         }
     }
 
-    LocalTime.fromWeek = function (year, week, day, hour, minute, second, ms, zone) {
+    LocalTime.fromWeek = function (year, week, day, hour, minute, second, ms, zone, firstDay) {
         if (typeof day === "string" || day == null) {
             zone = day;
+            firstDay = hour || 0;
             day = 0;
             hour = 0;
             minute = 0;
@@ -865,6 +866,7 @@
         }
         else if (typeof hour === "string" || hour == null) {
             zone = hour;
+            firstDay = minute || 0;
             hour = 0;
             minute = 0;
             second = 0;
@@ -872,23 +874,26 @@
         }
         else if (typeof minute === "string" || minute == null) {
             zone = minute;
+            firstDay = second || 0;
             minute = 0;
             second = 0;
             ms = 0;
         }
         else if (typeof second === "string" || second == null) {
             zone = second;
+            firstDay = ms || 0;
             second = 0;
             ms = 0;
         }
         else if (typeof ms === "string" || ms == null) {
+            firstDay = zone || 0;
             zone = ms;
             ms = 0;
         }
 
         var yearStart = new LocalTime(year, 1, 1, zone);
         var weekDay = yearStart.getDayOfWeek();
-        var ordinalDay = week * 7 - 7 - (weekDay <= 3 ? weekDay : weekDay - 7) + day;
+        var ordinalDay = week * 7 - 7 - (7 - weekDay + firstDay > 3 ? weekDay : weekDay - 7) + day;
         var month = 1;
         var monthDays = new Date(year, month, 0).getDate();
         while (monthDays < ordinalDay) {
