@@ -279,7 +279,7 @@
         return Math.floor(week);
     };
     LocalTime.prototype.setMinutes = function (minute, second, ms) {
-        if (ms) {
+        if (ms != null) {
             var r = ms % 1000;
             second += (ms - r) / 1000;
             if (r < 0) {
@@ -303,7 +303,7 @@
         }
     };
     LocalTime.prototype.setHours = function (hour, minute, second, ms) {
-        if (ms) {
+        if (ms != null) {
             var r = ms % 1000;
             second += (ms - r) / 1000;
             if (r < 0) {
