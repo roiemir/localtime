@@ -270,12 +270,15 @@
     LocalTime.prototype.getDay = function () { return this.day; };
     LocalTime.prototype.getDayOfWeek = function () { return new Date(this.year, this.month - 1, this.day).getDay(); };
     var dayInMilliseconds = 60000*60*24;
-    LocalTime.prototype.getWeek = function (firstDay) {
+    LocalTime.prototype.getDayOfYear = function () {
         var yearStart = new LocalTime(this.year, 1, 1, this.zone);
-        var ordinalDay = Math.floor(
+        return Math.floor(
             ((this.time - yearStart) + ((this.offset - yearStart.offset) * 1000)) / dayInMilliseconds);
+    };
+    LocalTime.prototype.getWeek = function (firstDay) {
+        var dayOfYear = this.getDayOfYear();
         var weekDay = (7 + this.getDayOfWeek() - (firstDay || 0)) % 7;
-        var week = (ordinalDay - weekDay + 10) / 7;
+        var week = (dayOfYear - weekDay + 10) / 7;
         return Math.floor(week);
     };
     LocalTime.prototype.setMinutes = function (minute, second, ms) {
