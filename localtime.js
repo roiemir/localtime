@@ -281,6 +281,9 @@
         var week = (dayOfYear - weekDay + 10) / 7;
         return Math.floor(week);
     };
+    LocalTime.prototype.getMonth = function () { return this.month; };
+    LocalTime.prototype.getYear = function ()  { return this.year; };
+
     LocalTime.prototype.setMinutes = function (minute, second, ms) {
         if (ms != null) {
             var r = ms % 1000;
