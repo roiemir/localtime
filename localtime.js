@@ -273,10 +273,10 @@
     LocalTime.prototype.getDayOfYear = function () {
         var yearStart = new LocalTime(this.year, 1, 1, this.zone);
         return Math.floor(
-            ((this.time - yearStart) + ((this.offset - yearStart.offset) * 1000)) / dayInMilliseconds);
+            ((this.time - yearStart) + ((this.offset - yearStart.offset) * 1000)) / dayInMilliseconds) + 1;
     };
     LocalTime.prototype.getWeek = function (firstDay) {
-        var dayOfYear = this.getDayOfYear();
+        var dayOfYear = this.getDayOfYear() - 1;
         var weekDay = (7 + this.getDayOfWeek() - (firstDay || 0)) % 7;
         var week = (dayOfYear - weekDay + 10) / 7;
         return Math.floor(week);
@@ -859,6 +859,37 @@
             }
         }
     }
+
+    LocalTime.fromDayOfYear = function (year, dayOfYear, hour, minute, second, ms, zone) {
+        if (typeof hour === "string" || hour == null) {
+            zone = hour;
+            hour = 0;
+            minute = 0;
+            second = 0;
+            ms = 0;
+        }
+        else if (typeof minute === "string" || minute == null) {
+            zone = minute;
+            minute = 0;
+            second = 0;
+            ms = 0;
+        }
+        else if (typeof second === "string" || second == null) {
+            zone = second;
+            second = 0;
+            ms = 0;
+        }
+        else if (typeof ms === "string" || ms == null) {
+            zone = ms;
+            ms = 0;
+        }
+
+        var result = new LocalTime(year, 1, 1, hour, minute, second, ms, zone);
+        if (dayOfYear > 1) {
+            result.setDay(dayOfYear);
+        }
+        return result;
+    };
 
     LocalTime.fromWeek = function (year, week, day, hour, minute, second, ms, zone, firstDay) {
         if (typeof day === "string" || day == null) {

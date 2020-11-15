@@ -33,6 +33,21 @@ describe('manipulation', function () {
             time.setDay(time.getDay() - 42);
             assert.equal(time.toString(), "2019-02-24 07:23:15 MST -07:00");
         });
-
+        it('getting day of year', function () {
+            var time = new LocalTime(2019, 6, 30, 7, 23, 15, "America/Denver");
+            assert.equal(time.getDayOfYear(), 181);
+        });
+        it('getting day of leap year', function () {
+            var time = new LocalTime(2020, 6, 30, 7, 23, 15, "America/Denver");
+            assert.equal(time.getDayOfYear(), 182);
+        });
+        it('from day of year', function () {
+            var time = LocalTime.fromDayOfYear(2019, 181, 7, 23, 15, "America/Denver");
+            assert.equal(time.toString(), "2019-06-30 07:23:15 MDT -06:00");
+        });
+        it('from day of leap year', function () {
+            var time = LocalTime.fromDayOfYear(2020, 182, 7, 23, 15, "America/Denver");
+            assert.equal(time.toString(), "2020-06-30 07:23:15 MDT -06:00");
+        });
     });
 });
