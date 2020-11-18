@@ -265,6 +265,8 @@
         return this.time;
     };
 
+    LocalTime.prototype.getMilliseconds = function () { return this.ms; };
+    LocalTime.prototype.getSeconds = function () { return this.second; };
     LocalTime.prototype.getMinutes = function () { return this.minute; };
     LocalTime.prototype.getHours = function () { return this.hour; };
     LocalTime.prototype.getDay = function () { return this.day; };
