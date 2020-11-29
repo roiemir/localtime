@@ -439,6 +439,11 @@
             time.tz = formatUtcTimezone(time.offset);
             return true;
         }
+        else if (time.zone === "UTC") {
+            time.time = Date.UTC(time.year, time.month - 1, time.day, time.hour, time.minute, time.second, time.ms);
+            time.offset = 0;
+            time.tz = "UTC";
+        }
         var data = getTimezoneData(time.zone);
         if (data) {
             /*var n = 0;
