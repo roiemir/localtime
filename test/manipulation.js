@@ -13,6 +13,11 @@ describe('manipulation', function () {
             time.setDay(time.getDay() - 1);
             assert.equal(time.toString(), "2019-08-10 07:23:15 MDT -06:00");
         });
+        it('subtracting day to 0', function () {
+            var time = new LocalTime(2020, 12, 6, 0, 0, 0, "America/Denver");
+            time.setDay(time.getDay() - 6);
+            assert.equal(time.toString(), "2020-11-30 00:00 MST -07:00");
+        });
         it('adding 42 days', function () {
             var time = new LocalTime(2019, 8, 11, 7, 23, 15, "America/Denver");
             time.setDay(time.getDay() + 42);

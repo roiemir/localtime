@@ -339,7 +339,7 @@
     };
 
     LocalTime.prototype.setDay = function (day) {
-        if (day) {
+        if (day != null) {
             modifyTime(this, (day-this.day)*24*60*60);
             evaluateUtc(this);
         }
