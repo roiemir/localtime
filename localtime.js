@@ -867,6 +867,10 @@
         }
     }
 
+    function getYearDays(year) {
+        return (year % 4) === 0 && ((year % 100) !== 0 || (year % 400) === 0) ? 366 : 365;
+    }
+
     LocalTime.fromDayOfYear = function (year, dayOfYear, hour, minute, second, ms, zone) {
         if (typeof hour === "string" || hour == null) {
             zone = hour;
@@ -938,6 +942,16 @@
         var yearStart = new LocalTime(year, 1, 1, zone);
         var weekDay = yearStart.getDayOfWeek();
         var ordinalDay = week * 7 - 7 - (7 - weekDay + firstDay > 3 ? weekDay : weekDay - 7) + day;
+        var yearDays = getYearDays(year);
+        while (ordinalDay > yearDays) {
+            year++;
+            ordinalDay -= yearDays;
+            yearDays = getYearDays(year);
+        }
+        while (ordinalDay < 0) {
+            year--;
+            ordinalDay += getYearDays(year);
+        }
         var month = 1;
         var monthDays = new Date(year, month, 0).getDate();
         while (monthDays < ordinalDay) {

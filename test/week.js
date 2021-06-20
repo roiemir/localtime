@@ -53,5 +53,15 @@ describe('week', function () {
             assert.equal(time.toString(), "2015-01-13 00:00 MST -07:00");
         });
 
+        it('getting week by using zero week', function () {
+            var time = LocalTime.fromWeek(2021, 0, "America/Denver");
+            assert.equal(time.toString(), "2020-12-27 00:00 MST -07:00");
+        });
+
+        it('getting week by using next year first week', function () {
+            var time = LocalTime.fromWeek(2021, 53, "America/Denver");
+            assert.equal(time.toString(), "2022-01-02 00:00 MST -07:00");
+        });
+
     });
 });
