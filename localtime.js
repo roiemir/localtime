@@ -160,82 +160,6 @@
         var data = getTimezoneData(zone);
         if (data) {
             this.zone = zone;
-            /*var n = 0;
-            var line = data.lines[0];
-            offsetTime(this, line.stdoff);
-            var rule = evaluateRule(this, line.rule);
-            if (rule && rule.save) {
-                offsetTime(this, rule.save);
-            }
-            while (line.until) {
-                if (line.until.day == null) {
-                    if (this.year < line.until.year) {
-                        break;
-                    }
-                    if (this.year === line.until.year) {
-                        if (line.until.month != null && this.month < line.until.month) {
-                            break;
-                        }
-                    }
-                }
-                else {
-                    var td = getTimeForDay(line.until.year, line.until.month, line.until.day);
-                    if (this.year < td.year) {
-                        break;
-                    }
-                    if (this.year === td.year) {
-                        if (this.month < td.month) {
-                            break;
-                        }
-                        if (this.month === td.month) {
-                            if (this.day < td.day) {
-                                break;
-                            }
-
-                            if (this.day === td.day) {
-                                if (line.until.time == null) {
-                                    break;
-                                }
-                                if (typeof line.until.time === "number") {
-                                    if (timeOffset(this) < line.until.time) {
-                                        break;
-                                    }
-                                }
-                                else if (line.until.time.std != null) {
-                                    var save = rule ? rule.save : 0;
-                                    offsetTime(this, -save);
-                                    if (timeOffset(this) < line.until.time.std) {
-                                        offsetTime(this, save);
-                                        break;
-                                    }
-                                    offsetTime(this, save);
-                                }
-                                else if (line.until.time.utc != null) {
-                                    var offset = this.offset;
-                                    offsetTime(this, -offset);
-                                    if (timeOffset(this) < line.until.time.utc) {
-                                        offsetTime(this, offset);
-                                        break;
-                                    }
-                                    offsetTime(this, offset);
-                                }
-                            }
-                        }
-                    }
-                }
-                if (rule && rule.save) {
-                    offsetTime(this, -rule.save);
-                }
-                n++;
-                line = data.lines[n];
-                if (line.stdoff !== this.offset) {
-                    offsetTime(this, line.stdoff - this.offset);
-                }
-                rule = evaluateRule(this, line.rule);
-                if (rule && rule.save) {
-                    offsetTime(this, rule.save);
-                }
-            }*/
 
             var n = 0;
             var line = data.lines[0];
@@ -446,85 +370,6 @@
         }
         var data = getTimezoneData(time.zone);
         if (data) {
-            /*var n = 0;
-            var line = data.lines[0];
-            // TODO - will not work with u time
-            var ruleSave = findRuleSave(time.year, line.rule, time.tz ? extractLetters(line.format, time.tz) : null);
-            if (ruleSave) {
-                offsetTime(time, -ruleSave);
-            }
-            var rule = evaluateRule(time, line.rule);
-            if (ruleSave) {
-                offsetTime(time, ruleSave);
-            }
-            while (line.until) {
-                if (line.until.day == null) {
-                    if (time.year < line.until.year) {
-                        break;
-                    }
-                    if (time.year === line.until.year) {
-                        if (line.until.month != null && time.month < line.until.month) {
-                            break;
-                        }
-                    }
-                }
-                else {
-                    var td = getTimeForDay(line.until.year, line.until.month, line.until.day);
-                    if (time.year < td.year) {
-                        break;
-                    }
-                    if (time.year === td.year) {
-                        if (time.month < td.month) {
-                            break;
-                        }
-                        if (time.month === td.month) {
-                            if (time.day < td.day) {
-                                break;
-                            }
-
-                            if (time.day === td.day) {
-                                if (line.until.time == null) {
-                                    break;
-                                }
-                                if (typeof line.until.time === "number") {
-                                    if (timeOffset(time) < line.until.time) {
-                                        break;
-                                    }
-                                }
-                                else if (line.until.time.std != null) {
-                                    var save = rule ? rule.save : 0;
-                                    offsetTime(time, -save);
-                                    if (timeOffset(time) < line.until.time.std) {
-                                        offsetTime(time, save);
-                                        break;
-                                    }
-                                    offsetTime(time, save);
-                                }
-                                else if (line.until.time.utc != null) {
-                                    var offset = time.offset;
-                                    offsetTime(time, -offset);
-                                    if (timeOffset(time) < line.until.time.utc) {
-                                        offsetTime(time, offset);
-                                        break;
-                                    }
-                                    offsetTime(time, offset);
-                                }
-                            }
-                        }
-                    }
-                }
-                n++;
-                line = data.lines[n];
-                ruleSave = findRuleSave(time.year, line.rule, time.tz ? extractLetters(line.format, time.tz) : null);
-                if (ruleSave) {
-                    offsetTime(time, -ruleSave);
-                }
-                rule = evaluateRule(time, line.rule);
-                if (ruleSave) {
-                    offsetTime(time, ruleSave);
-                }
-            }*/
-
             var n = 0;
             var line = data.lines[0];
             while (line.change &&
@@ -1516,15 +1361,4 @@
         })(require('fs'), require('path'));
     }
 
-    /*LocalTime.load(["tzdata/northamerica", "tzdata/asia"], function () {
-        //var time = new LocalTime(new Date("2019-03-10T08:00Z"), "America/Denver");
-        //var time2 = new LocalTime(time);
-        //time2.setHours(0);
-//        console.log(new LocalTime(new Date("1963-12-31T16:30Z"), "Asia/Jakarta").toString());
-        //console.log(new LocalTime("2015-03-08 01:00 CDT -04:00", "America/Havana").toString());
-        console.log(new LocalTime(new Date("2005-03-26T22:00Z"), "Asia/Tbilisi").toString());
-        //console.log(new Date(new LocalTime("1991-03-31 02:00 +05/+06 +06:00", "Asia/Dushanbe")).toISOString());
-    });*/
-
-    //console.log(new LocalTime(2019, 7, 28, 13, 8, 0, 1).toString());
 })();
