@@ -451,7 +451,7 @@
                     time = 0;
                 }
                 thisoff = line.stdoff;
-                if (time.utc) {
+                if (time.utc != null) {
                     offsetTime(t, time.utc);
                     offsetTime(line.change, line.stdoff);
                     var rule = evaluateRule(line.change, line.rule);
@@ -460,7 +460,7 @@
                     }
                     offsetTime(line.change, time.utc);//-line.stdoff+time.utc);
                 }
-                else if (time.std) {
+                else if (time.std != null) {
                     offsetTime(t, -line.stdoff+time.std);
                     var rule = evaluateRule(t, line.rule);
                     if (rule && rule.save) {

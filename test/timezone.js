@@ -19,6 +19,7 @@ var conversions = [
     ["America/Havana", "2015-03-08T05:00Z", "2015-03-08 01:00 CDT -04:00"],
     ["America/Havana", "2015-11-01T04:00Z", "2015-11-01 00:00 CDT -04:00"],
     ["America/Havana", "2015-11-01T05:00Z", "2015-11-01 00:00 CST -05:00"],
+    ["Europe/Lisbon",  "2021-07-22T09:00Z", "2021-07-22 10:00 WEDT +01:00"],
     //["Asia/Tbilisi",   "1991-03-30T22:00Z", "1991-03-31 02:00 +03/+04+04:00"], // not sure about this one
     //["Asia/Tbilisi",   "1991-03-30T21:00Z", "1991-03-31 01:00 +04/+05+04:00"],
     ["Asia/Dushanbe",  "1991-03-30T19:00Z", "1991-03-31 01:00 +06/+07 +06:00"], // Doesn't work backwards
@@ -44,7 +45,7 @@ function testConversion(conversion) {
 }
 
 describe('timezones', function () {
-    LocalTime.load(["tzdata/northamerica", "tzdata/asia"], function () {
+    LocalTime.load(["tzdata/northamerica", "tzdata/europe", "tzdata/asia"], function () {
         for (var i = 0; i < conversions.length; i++) {
             testConversion(conversions[i]);
         }
