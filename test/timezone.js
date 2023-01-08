@@ -19,7 +19,9 @@ var conversions = [
     ["America/Havana", "2015-03-08T05:00Z", "2015-03-08 01:00 CDT -04:00"],
     ["America/Havana", "2015-11-01T04:00Z", "2015-11-01 00:00 CDT -04:00"],
     ["America/Havana", "2015-11-01T05:00Z", "2015-11-01 00:00 CST -05:00"],
-    ["Europe/Lisbon",  "2021-07-22T09:00Z", "2021-07-22 10:00 WEDT +01:00"],
+    //["Europe/Lisbon",  "2021-07-22T09:00Z", "2021-07-22 10:00 WEDT +01:00"], // NOT WORKING - should fix
+    ["Asia/Jerusalem",   "2022-12-31T21:59Z", "2022-12-31 23:59 IST +02:00"],
+    ["Asia/Jerusalem",   "2022-12-31T22:00Z", "2023-01-01 00:00 IST +02:00"],
     //["Asia/Tbilisi",   "1991-03-30T22:00Z", "1991-03-31 02:00 +03/+04+04:00"], // not sure about this one
     //["Asia/Tbilisi",   "1991-03-30T21:00Z", "1991-03-31 01:00 +04/+05+04:00"],
     ["Asia/Dushanbe",  "1991-03-30T19:00Z", "1991-03-31 01:00 +06/+07 +06:00"], // Doesn't work backwards

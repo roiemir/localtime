@@ -554,7 +554,8 @@
                             save = sel.save;
                             offsetTime(time, save);
                         }
-                        if (td.month < time.month) {
+                        if (time.year === td.year + 1 || // Time offset changed year
+                            td.month < time.month) {
                             sel = c;
                         } else if (td.month === time.month) {
                             if (td.day < time.day) {
